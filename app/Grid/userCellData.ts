@@ -5,6 +5,21 @@ interface Cell {
     color: string;
 }
 
+let valueIdxMap = new Map<number,number>();
+
+export const idxToBeMarked = (value:number):number => {
+    if(valueIdxMap.has(value))
+      return valueIdxMap.get(value) as number;
+    return -1;
+}
+
+export const mapValueToIdx = (value:number, index:number) =>{
+    if(value ===26)
+        valueIdxMap.set(25,index);
+    else
+        valueIdxMap.set(value,index);
+}
+
 const userCellData: Cell[] = [
     {   
         value : 0,

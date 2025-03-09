@@ -1,20 +1,17 @@
 //use ContextAPI to prop drill states between cells and grid components
 
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  Touchable,
-  View,
-} from "react-native";
-import userCellData from "./Grid/userCellData";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import userCellData, { idxToBeMarked, mapValueToIdx } from "./Grid/userCellData";
 import { checkers } from "./BingoChecker/checkers";
 import { useState } from "react";
 import { pcCellData, pcIndex } from "./Grid/pcCellData";
-import { randomPcGridFill } from "./computerLogic/randomNumberGeneration";
+import {
+  generateRandomValueFromGrid,
+  pcIdxToBeMarked,
+  randomPcGridFill,
+} from "./computerLogic/randomNumberGeneration";
+import { Cell, PcCell } from "./Grid/Cell";
+import { pcChecker } from "./BingoChecker/PcChecker";
 
 interface CellProps {
   index: number;
@@ -24,39 +21,6 @@ interface CellProps {
   cellValue: number;
   handlePress(cellValue: number, index: number): void;
 }
-
-const Cell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
-  <Pressable
-    onPress={() => handlePress(cellValue, index)}
-    style={styles.cellContainer}
-  >
-    <View style={[styles.cell, { backgroundColor: `${color}` }]}>
-      <Text
-        style={[
-          styles.title,
-
-          cellValue > 0 ? { color: "black" } : { color: "white" },
-        ]}
-      >
-        {cellValue}
-      </Text>
-    </View>
-  </Pressable>
-);
-const PcCell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
-  <Pressable style={styles.cellContainer}>
-    <View style={[styles.cell, { backgroundColor: `${color}` }]}>
-      <Text
-        style={[
-          styles.title,
-          cellValue > 0 ? { color: "black" } : { color: "white" },
-        ]}
-      >
-        {cellValue}
-      </Text>
-    </View>
-  </Pressable>
-);
 
 export default function Index() {
   const [counter, setCounter] = useState<number>(1);
@@ -71,6 +35,10 @@ export default function Index() {
   const handleConfirmPress = () => {
     setGameStatus(!gameStatus);
     console.log(gameStatus);
+  };
+
+  const removeElementFromUnmarked = (value: number) => {
+    setUnmarked((unmarked) => unmarked.filter((item) => item !== value));
   };
 
   const handlePress = (cellValue: number, index: number) => {
@@ -100,6 +68,7 @@ export default function Index() {
         }
         setCounter(counter + 1);
         setUnmarked([...unmarked, counter]);
+        mapValueToIdx(counter,index);
       } else {
         alert("Cannot fill already filled Cell");
       }
@@ -108,16 +77,34 @@ export default function Index() {
       if (turn) {
         //user turn
         //select cell to be marked.
-        if (userCellData[index].color === "#1FA1D2") {
+        if (!unmarked.includes(cellValue)) {
           alert("already Marked");
         } else {
           userCellData[index].color = "#1FA1D2";
-          setTurn(!turn);
+          //mark element in the pc grid.
+          let pcIndex = pcIdxToBeMarked(userCellData[index].value);
+          console.log(pcIndex);
+          if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
+          pcCellData[pcIndex].color = '#1FA1D2';
           checkers(userCellData[index]);
+          removeElementFromUnmarked(userCellData[index].value);
+          setTurn(!turn);
         }
         //after every step
         //switch turn state
       } else {
+        //pc grid generates number from unmarked array state
+        let value = generateRandomValueFromGrid(unmarked);
+        //then remove element from unmarked array
+        removeElementFromUnmarked(value);
+        //mark the cell in user cell and pc cell which has that value
+        let pcIndex = pcIdxToBeMarked(value);
+        if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
+        pcCellData[pcIndex].color = '#1FA1D2';
+        let userIdx = idxToBeMarked(value);
+        if(userIdx >=0) checkers(userCellData[userIdx])
+        userCellData[userIdx].color = '#1FA1D2'
+        //call checker and pc checker
         setTurn(!turn);
       }
     }
@@ -144,7 +131,7 @@ export default function Index() {
         </>
       )}
 
-      <FlatList
+      {/* <FlatList
         contentContainerStyle={styles.flatList}
         style={styles.flatlistContainer}
         data={pcCellData}
@@ -160,7 +147,7 @@ export default function Index() {
         )}
         keyExtractor={(cell) => cell.x + "," + cell.y}
         numColumns={5}
-      />
+      /> */}
       <FlatList
         contentContainerStyle={styles.flatList}
         style={styles.flatlistContainer}
@@ -190,26 +177,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
   },
-  cellContainer: {
-    justifyContent: "center",
-    backgroundColor: "white",
-    padding: 20,
-    marginVertical: 3,
-    marginHorizontal: 3,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: "black",
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-    height: 65,
-    width: 65,
-  },
-  cell: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 15,
-  },
+
   flatList: {
     alignItems: "center",
     justifyContent: "center",
