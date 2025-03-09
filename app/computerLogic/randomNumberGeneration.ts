@@ -9,6 +9,8 @@ interface Cell {
 
 let valueIdxMap = new Map<number,number>;
 
+export let current = -1;
+
 export const randomPcGridFill = (
   pcCellData: Cell[],
   pcIndex: number[],
@@ -40,5 +42,6 @@ export const pcIdxToBeMarked = (value:number):number => {
 export const generateRandomValueFromGrid = (unmarked:Array<number>):number => {
     const random = Math.floor(Math.random() * unmarked.length);
     const value = unmarked[random];
+    current = value;
     return value;
 }

@@ -1,11 +1,15 @@
 //use ContextAPI to prop drill states between cells and grid components
 
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import userCellData, { idxToBeMarked, mapValueToIdx } from "./Grid/userCellData";
+import userCellData, {
+  idxToBeMarked,
+  mapValueToIdx,
+} from "./Grid/userCellData";
 import { checkers } from "./BingoChecker/checkers";
 import { useState } from "react";
 import { pcCellData, pcIndex } from "./Grid/pcCellData";
 import {
+  current,
   generateRandomValueFromGrid,
   pcIdxToBeMarked,
   randomPcGridFill,
@@ -22,24 +26,49 @@ interface CellProps {
   handlePress(cellValue: number, index: number): void;
 }
 
+
 export default function Index() {
   const [counter, setCounter] = useState<number>(1);
   const [filledStatus, setFilledStatus] = useState<boolean>(false);
   const [unmarked, setUnmarked] = useState<Array<number>>([]);
   const [gameStatus, setGameStatus] = useState<boolean>(false);
   const [turn, setTurn] = useState<boolean>(true);
+  // const [currentNumber , setCurrentNumber ] = useState<number>(-1);
 
   console.log(unmarked);
   randomPcGridFill(pcCellData, pcIndex, counter);
 
+  
   const handleConfirmPress = () => {
     setGameStatus(!gameStatus);
     console.log(gameStatus);
   };
-
+  
   const removeElementFromUnmarked = (value: number) => {
     setUnmarked((unmarked) => unmarked.filter((item) => item !== value));
   };
+
+  const nextPlayerTurn = (value:number) => {
+    //pc grid generates number from unmarked array state
+    //then remove element from unmarked array
+    // setCurrentNumber(value);
+    removeElementFromUnmarked(value);
+    //mark the cell in user cell and pc cell which has that value
+    let pcIndex = pcIdxToBeMarked(value);
+    if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
+    
+    pcCellData[pcIndex].color = "#1FA1D2";
+    let userIdx = idxToBeMarked(value);
+    if (userIdx >= 0) checkers(userCellData[userIdx]);
+    userCellData[userIdx].color = "#1FA1D2";
+    //call checker and pc checker
+    setTurn(!turn);
+    return value;
+  };
+
+  if (!turn){
+    setTimeout(()=>{nextPlayerTurn(current);},2000);
+  } 
 
   const handlePress = (cellValue: number, index: number) => {
     // when gameStatus == false
@@ -68,45 +97,30 @@ export default function Index() {
         }
         setCounter(counter + 1);
         setUnmarked([...unmarked, counter]);
-        mapValueToIdx(counter,index);
+        mapValueToIdx(counter, index);
       } else {
         alert("Cannot fill already filled Cell");
       }
     } else {
       //game logic
-      if (turn) {
-        //user turn
-        //select cell to be marked.
-        if (!unmarked.includes(cellValue)) {
-          alert("already Marked");
-        } else {
-          userCellData[index].color = "#1FA1D2";
-          //mark element in the pc grid.
-          let pcIndex = pcIdxToBeMarked(userCellData[index].value);
-          console.log(pcIndex);
-          if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
-          pcCellData[pcIndex].color = '#1FA1D2';
-          checkers(userCellData[index]);
-          removeElementFromUnmarked(userCellData[index].value);
-          setTurn(!turn);
-        }
-        //after every step
-        //switch turn state
+      //user turn
+      //select cell to be marked.
+      if (!unmarked.includes(cellValue)) {
+        alert("already Marked");
       } else {
-        //pc grid generates number from unmarked array state
-        let value = generateRandomValueFromGrid(unmarked);
-        //then remove element from unmarked array
-        removeElementFromUnmarked(value);
-        //mark the cell in user cell and pc cell which has that value
-        let pcIndex = pcIdxToBeMarked(value);
+        userCellData[index].color = "#1FA1D2";
+        //mark element in the pc grid.
+        let pcIndex = pcIdxToBeMarked(userCellData[index].value);
+        console.log(pcIndex);
         if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
-        pcCellData[pcIndex].color = '#1FA1D2';
-        let userIdx = idxToBeMarked(value);
-        if(userIdx >=0) checkers(userCellData[userIdx])
-        userCellData[userIdx].color = '#1FA1D2'
-        //call checker and pc checker
+        pcCellData[pcIndex].color = "#1FA1D2";
+        checkers(userCellData[index]);
+        removeElementFromUnmarked(userCellData[index].value);
+        let value = generateRandomValueFromGrid(unmarked);
         setTurn(!turn);
       }
+      //after every step
+      //switch turn state
     }
   };
 
@@ -118,9 +132,15 @@ export default function Index() {
           <Text style={styles.headerTitle}>Number:</Text>
           <Text style={styles.headerTitle}>{counter}</Text>
         </>
-      ) : gameStatus ? (
+      ) : gameStatus ?
+      (
         <>
-          <Text>Number is:</Text>
+        {
+          !turn?
+          <Text style= {[styles.title, {color:"blue"}]}>PC Chose: {current}</Text>
+          :
+          <Text style = {[styles.title,{color:"#000000"}]}>Your Turn!</Text>
+        }
         </>
       ) : (
         <>
