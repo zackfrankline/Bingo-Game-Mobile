@@ -9,7 +9,7 @@ interface CellProps {
     handlePress(cellValue: number, index: number): void;
   }
 
-export const Cell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
+ const Cell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
   <Pressable
     onPress={() => handlePress(cellValue, index)}
     style={styles.cellContainer}
@@ -27,7 +27,7 @@ export const Cell = ({ index, x, y, cellValue, handlePress, color }: CellProps) 
   </Pressable>
 );
 
-export const PcCell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
+const PcCell = ({ index, x, y, cellValue, handlePress, color }: CellProps) => (
   <Pressable style={styles.cellContainer}>
     <View style={[styles.cell, { backgroundColor: `${color}` }]}>
       <Text
@@ -41,6 +41,8 @@ export const PcCell = ({ index, x, y, cellValue, handlePress, color }: CellProps
     </View>
   </Pressable>
 );
+
+export default Cell;
 
 const styles = StyleSheet.create({
     cellContainer: {
