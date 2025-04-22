@@ -1,6 +1,13 @@
 //use ContextAPI to prop drill states between cells and grid components
 
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import userCellData, {
   idxToBeMarked,
   mapValueToIdx,
@@ -16,8 +23,8 @@ import {
 } from "../computerLogic/randomNumberGeneration";
 import Cell from "../Components/Grid/Cell";
 
-import { checkers } from "@/BingoChecker/checkers";
-import { pcChecker } from "@/BingoChecker/PcChecker";
+import { checkers } from "../BingoChecker/checkers";
+import { pcChecker } from "../BingoChecker/PcChecker";
 
 // pcChecker
 interface CellProps {
@@ -29,7 +36,6 @@ interface CellProps {
   handlePress(cellValue: number, index: number): void;
 }
 
-
 export default function GameScreen() {
   const [counter, setCounter] = useState<number>(1);
   const [filledStatus, setFilledStatus] = useState<boolean>(false);
@@ -39,19 +45,17 @@ export default function GameScreen() {
 
   // console.log(unmarked);
   randomPcGridFill(pcCellData, pcIndex, counter);
-  
+
   const handleConfirmPress = () => {
     setGameStatus(!gameStatus);
     // console.log(gameStatus);
   };
-  
+
   const removeElementFromUnmarked = (value: number) => {
     setUnmarked((unmarked) => unmarked.filter((item) => item !== value));
   };
 
- 
-
-  const nextPlayerTurn = (value:number) => {
+  const nextPlayerTurn = (value: number) => {
     //pc grid generates number from unmarked array state
     //then remove element from unmarked array
     // setCurrentNumber(value);
@@ -59,7 +63,7 @@ export default function GameScreen() {
     //mark the cell in user cell and pc cell which has that value
     let pcIndex = pcIdxToBeMarked(value);
     if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
-    
+
     pcCellData[pcIndex].color = "#1FA1D2";
     let userIdx = idxToBeMarked(value);
     if (userIdx >= 0) checkers(userCellData[userIdx]);
@@ -69,9 +73,11 @@ export default function GameScreen() {
     return value;
   };
 
-  if (!turn){
-    setTimeout(()=>{nextPlayerTurn(current);},2000);
-  } 
+  if (!turn) {
+    setTimeout(() => {
+      nextPlayerTurn(current);
+    }, 2000);
+  }
 
   const handlePress = (cellValue: number, index: number) => {
     // when gameStatus == false
@@ -94,7 +100,7 @@ export default function GameScreen() {
     if (gameStatus == false) {
       if (userCellData[index].value == 0) {
         userCellData[index].value = counter;
-        userCellData[index].color = "#90ee90";
+        userCellData[index].color = "#563c5c";
         if (counter == 25) {
           setFilledStatus(!filledStatus);
         }
@@ -111,7 +117,7 @@ export default function GameScreen() {
       if (!unmarked.includes(cellValue)) {
         alert("already Marked");
       } else {
-        userCellData[index].color = "#1FA1D2";
+        userCellData[index].color = "#F5853F";
         //mark element in the pc grid.
         let pcIndex = pcIdxToBeMarked(userCellData[index].value);
         // console.log(pcIndex);
@@ -129,21 +135,27 @@ export default function GameScreen() {
 
   return (
     <View style={styles.mainContainer}>
+      {/* // <ImageBackground */}
+      {/* //   style={styles.mainContainer}
+    //   resizeMode="stretch"
+    //   blurRadius={3}
+    //   source={require("../assets/images/BingoBackground.png")}
+    // > */}
       {!filledStatus ? (
         <>
           <Text style={styles.headerTitle}>Press cell to fill number</Text>
           <Text style={styles.headerTitle}>Number:</Text>
           <Text style={styles.headerTitle}>{counter}</Text>
         </>
-      ) : gameStatus ?
-      (
+      ) : gameStatus ? (
         <>
-        {
-          !turn?
-          <Text style= {[styles.title, {color:"blue"}]}>PC Chose: {current}</Text>
-          :
-          <Text style = {[styles.title,{color:"#000000"}]}>Your Turn!</Text>
-        }
+          {!turn ? (
+            <Text style={[styles.title, { color: "blue" }]}>
+              PC Chose: {current}
+            </Text>
+          ) : (
+            <Text style={[styles.title, { color: "#000000" }]}>Your Turn!</Text>
+          )}
         </>
       ) : (
         <>
@@ -160,35 +172,37 @@ export default function GameScreen() {
         data={pcCellData}
         renderItem={({ item, index }) => (
           <PcCell
-            index={index}
-            x={item.x}
-            y={item.y}
-            cellValue={item.value}
-            color={item.color}
-            handlePress={handlePress}
+          index={index}
+          x={item.x}
+          y={item.y}
+          cellValue={item.value}
+          color={item.color}
+          handlePress={handlePress}
           />
-        )}
-        keyExtractor={(cell) => cell.x + "," + cell.y}
-        numColumns={5}
-      /> */}
-      <FlatList
-        contentContainerStyle={styles.flatList}
-        style={styles.flatlistContainer}
-        data={userCellData}
-        renderItem={({ item, index }) => (
-          <Cell
-            index={index}
-            x={item.x}
-            y={item.y}
-            cellValue={item.value}
-            color={item.color}
-            handlePress={handlePress}
-          />
-        )}
-        keyExtractor={(cell) => cell.x + "," + cell.y}
-        numColumns={5}
-      />
+          )}
+          keyExtractor={(cell) => cell.x + "," + cell.y}
+          numColumns={5}
+          /> */}
+      <View style={styles.flatList}> 
+        <FlatList
+          style={styles.flatlistContainer}
+          data={userCellData}
+          renderItem={({ item, index }) => (
+            <Cell
+              index={index}
+              x={item.x}
+              y={item.y}
+              cellValue={item.value}
+              color={item.color}
+              handlePress={handlePress}
+            />
+          )}
+          keyExtractor={(cell) => cell.x + "," + cell.y}
+          numColumns={5}
+        />
+      </View>
       <Text style={styles.bingoText}>B I N G O</Text>
+      {/* </ImageBackground> */}
     </View>
   );
 }
@@ -198,27 +212,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "#90ee90",
   },
 
   flatList: {
     alignItems: "center",
     justifyContent: "center",
+    shadowOpacity: 1,
+    shadowOffset: { width: 2, height: 4 },
+    shadowColor: "#2a3439",
+    shadowRadius: 4,
     // marginLeft:20,
     // marginRight:20,
   },
   flatlistContainer: {
-    borderWidth: 3,
+    borderWidth: 10,
     borderRadius: 30,
+    borderColor: "#f0fff0",
     flexGrow: 0,
     marginBottom: 50,
     marginTop: 20,
     // marginHorizontal: 50,
-    padding: 7,
-    backgroundColor: "#F0FFF0",
+    padding: 5,
+    backgroundColor: "#1fa1d2",
+    opacity: 1,
+    
   },
   headerTitle: {
     fontSize: 32,
+    fontFamily: "PixelifySans",
     // marginHorizontal:50,
     marginBottom: 20,
     // marginTop: 0,
@@ -229,23 +251,25 @@ const styles = StyleSheet.create({
   },
   bingoText: {
     fontSize: 32,
+    fontFamily: "PixelifySans",
   },
   confirmButton: {
-    shadowOpacity: 2,
-    shadowOffset: { width: 1, height: 1 },
-    shadowColor: "#1FA1D2",
-    shadowRadius: 3,
+    shadowOpacity: 1,
+    shadowOffset: { width: 2, height: 4 },
+    shadowColor: "#2a3439",
+    shadowRadius: 4,
     margin: 10,
     borderRadius: 20,
     width: 200,
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#1FA1D2",
+    backgroundColor: "#1fa1d2",
   },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 24,
     fontWeight: "600",
+    fontFamily: "PixelifySans",
   },
 });
