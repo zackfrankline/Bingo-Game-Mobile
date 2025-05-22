@@ -1,195 +1,21 @@
-interface Cell {
-    value: number;
-    x: number;
-    y: number;
-    color: string;
+import { Cell } from "../types/Cell";
+
+
+
+export const createEmptyCell = (x: number, y: number): Cell => ({
+    value: 0,
+    x,
+    y,
+    color: "#F0FFF0",
+  });
+
+const userCellData: Cell[] = [];
+
+for (let x = 0; x < 5; x++) {
+  for (let y = 0; y < 5; y++) {
+    userCellData.push(createEmptyCell(x, y));
+  }
 }
-
-let valueIdxMap = new Map<number,number>();
-
-export const idxToBeMarked = (value:number):number => {
-    if(valueIdxMap.has(value))
-      return valueIdxMap.get(value) as number;
-    return -1;
-}
-
-export const mapValueToIdx = (value:number, index:number) =>{
-    if(value ===26)
-        valueIdxMap.set(25,index);
-    else
-        valueIdxMap.set(value,index);
-}
-
-const userCellData: Cell[] = [
-    {   
-        value : 0,
-        x : 0,
-        y : 0,
-        color : '#F0FFF0'
-        
-    },
-    {   
-        value : 0,
-        x : 0,
-        y : 1,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 0,
-        y : 2,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 0,
-        y : 3,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 0,
-        y : 4,
-        color : '#F0FFF0'
-    },{
-        
-        value : 0,
-        x : 1,
-        y : 0,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-
-        x : 1,
-        y : 1,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 1,
-        y : 2,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 1,
-        y : 3,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 1,
-        y : 4,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 2,
-        y : 0,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 2,
-        y : 1,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 2,
-        y : 2,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 2,
-        y : 3,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 2,
-        y : 4,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 3,
-        y : 0,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 3,
-        y : 1,
-        color : '#F0FFF0'
-    },
-    {
-        
-        value : 0,
-        x : 3,
-        y : 2,
-        color : '#F0FFF0'
-    },
-    {
-    
-        value : 0,
-        x : 3,
-        y : 3,
-        color : '#F0FFF0'
-    },
-    {
-
-        value : 0,
-        x : 3,
-        y : 4,
-        color : '#F0FFF0'
-    },
-    {
-        value : 0,
-        x : 4,
-        y : 0,
-        color : '#F0FFF0'
-    },
-    {
-        value : 0,
-        x : 4,
-        y : 1,
-        color : '#F0FFF0'
-    },
-    {
-        value : 0,
-        x : 4,
-        y : 2,
-        color : '#F0FFF0'
-    },
-    {
-        value : 0,
-        x : 4,
-        y : 3,
-        color : '#F0FFF0'
-    },
-    {
-        value : 0,
-        x : 4,
-        y : 4,
-        color : '#F0FFF0'
-    },
-]
 
 export default userCellData;
+

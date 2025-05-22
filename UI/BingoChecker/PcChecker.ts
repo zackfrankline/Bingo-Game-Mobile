@@ -11,7 +11,6 @@ interface Cell {
 }
 
 export const pcChecker = (userCell: Cell) => {
-  console.log("pcChecker Called");
   let x = userCell.x; // row
   let y = userCell.y; //col
   if (row[x] + 1 == 5) {
@@ -38,6 +37,6 @@ export const pcChecker = (userCell: Cell) => {
     win--;
   } else if (x + y == 4) diagonal[1]++;
 
-  console.log("win remaining for bingo: " + win);
+  console.log("win remaining for bingo PC: " + win);
   if (win == 0) alert("Pc Wins");
 };

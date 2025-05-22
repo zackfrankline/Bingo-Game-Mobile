@@ -2,29 +2,19 @@
 
 import {
   FlatList,
-  ImageBackground,
+  Modal,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
-import userCellData, {
-  idxToBeMarked,
-  mapValueToIdx,
-} from "../Grid Mock Data/userCellData";
+import userCellData from "../Grid Mock Data/userCellData";
 
-import { useState } from "react";
 import { pcCellData, pcIndex } from "../Grid Mock Data/pcCellData";
-import {
-  current,
-  generateRandomValueFromGrid,
-  pcIdxToBeMarked,
-  randomPcGridFill,
-} from "../computerLogic/randomNumberGeneration";
+import { current, randomPcGridFill } from "../logic/randomNumberGeneration";
 import Cell from "../Components/Grid/Cell";
 
-import { checkers } from "../BingoChecker/checkers";
-import { pcChecker } from "../BingoChecker/PcChecker";
+import { useGameEngine } from "@/hooks/useGameEngine";
 
 // pcChecker
 interface CellProps {
@@ -37,41 +27,19 @@ interface CellProps {
 }
 
 export default function GameScreen() {
-  const [counter, setCounter] = useState<number>(1);
-  const [filledStatus, setFilledStatus] = useState<boolean>(false);
-  const [unmarked, setUnmarked] = useState<Array<number>>([]);
-  const [gameStatus, setGameStatus] = useState<boolean>(false);
-  const [turn, setTurn] = useState<boolean>(true);
+  const {
+    counter,
+    filledStatus,
+    gameStatus,
+    turn,
+    handlePress,
+    handleConfirmPress,
+    nextPlayerTurn,
+    winner,
+  } = useGameEngine();
 
   // console.log(unmarked);
   randomPcGridFill(pcCellData, pcIndex, counter);
-
-  const handleConfirmPress = () => {
-    setGameStatus(!gameStatus);
-    // console.log(gameStatus);
-  };
-
-  const removeElementFromUnmarked = (value: number) => {
-    setUnmarked((unmarked) => unmarked.filter((item) => item !== value));
-  };
-
-  const nextPlayerTurn = (value: number) => {
-    //pc grid generates number from unmarked array state
-    //then remove element from unmarked array
-    // setCurrentNumber(value);
-    removeElementFromUnmarked(value);
-    //mark the cell in user cell and pc cell which has that value
-    let pcIndex = pcIdxToBeMarked(value);
-    if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
-
-    pcCellData[pcIndex].color = "#1FA1D2";
-    let userIdx = idxToBeMarked(value);
-    if (userIdx >= 0) checkers(userCellData[userIdx]);
-    userCellData[userIdx].color = "#1FA1D2";
-    //call checker and pc checker
-    setTurn(!turn);
-    return value;
-  };
 
   if (!turn) {
     setTimeout(() => {
@@ -79,68 +47,15 @@ export default function GameScreen() {
     }, 2000);
   }
 
-  const handlePress = (cellValue: number, index: number) => {
-    // when gameStatus == false
-    // setCounter(counter+1);
-    //check if that cell with index is already filled ie.
-    // cellsData[index] != 0
-    // block user for filling in the data
-    // give warning!.
-    // if cellsData[index] == 0
-    //update cellsData[index].value = counter
-    //then update setCounter(counter + 1)
-    //when gameStatus == true
-    //we have a turn state (true ==> users turn, false ==> pc turn )
-    //during user turn
-    //user can mark cell with value present in unmarked.
-    //if element not present in unmarked then user cannot mark
-    //after users turn switch turn -> !turn for pc turn
-    //pc Generates a number by removing random
-    //when cell is not filled
-    if (gameStatus == false) {
-      if (userCellData[index].value == 0) {
-        userCellData[index].value = counter;
-        userCellData[index].color = "#563c5c";
-        if (counter == 25) {
-          setFilledStatus(!filledStatus);
-        }
-        setCounter(counter + 1);
-        setUnmarked([...unmarked, counter]);
-        mapValueToIdx(counter, index);
-      } else {
-        alert("Cannot fill already filled Cell");
-      }
-    } else {
-      //game logic
-      //user turn
-      //select cell to be marked.
-      if (!unmarked.includes(cellValue)) {
-        alert("already Marked");
-      } else {
-        userCellData[index].color = "#F5853F";
-        //mark element in the pc grid.
-        let pcIndex = pcIdxToBeMarked(userCellData[index].value);
-        // console.log(pcIndex);
-        if (pcIndex >= 0) pcChecker(pcCellData[pcIndex]);
-        pcCellData[pcIndex].color = "#1FA1D2";
-        checkers(userCellData[index]);
-        removeElementFromUnmarked(userCellData[index].value);
-        let value = generateRandomValueFromGrid(unmarked);
-        setTurn(!turn);
-      }
-      //after every step
-      //switch turn state
-    }
-  };
-
   return (
     <View style={styles.mainContainer}>
-      {/* // <ImageBackground */}
-      {/* //   style={styles.mainContainer}
-    //   resizeMode="stretch"
-    //   blurRadius={3}
-    //   source={require("../assets/images/BingoBackground.png")}
-    // > */}
+      <Modal visible={!!winner} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.winnerText}>{winner} Wins!</Text>
+          </View>
+        </View>
+      </Modal>
       {!filledStatus ? (
         <>
           <Text style={styles.headerTitle}>Press cell to fill number</Text>
@@ -183,7 +98,7 @@ export default function GameScreen() {
           keyExtractor={(cell) => cell.x + "," + cell.y}
           numColumns={5}
           /> */}
-      <View style={styles.flatList}> 
+      <View style={styles.flatList}>
         <FlatList
           style={styles.flatlistContainer}
           data={userCellData}
@@ -236,7 +151,6 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: "#1fa1d2",
     opacity: 1,
-    
   },
   headerTitle: {
     fontSize: 32,
@@ -271,5 +185,21 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     fontFamily: "PixelifySans",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  winnerText: {
+    fontSize: 32,
+    fontWeight: "bold",
   },
 });
