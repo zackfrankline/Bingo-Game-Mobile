@@ -1,3 +1,4 @@
+import Cell from "@/Components/Grid/Cell";
 
 
 interface Cell {
@@ -11,6 +12,13 @@ let valueIdxMap = new Map<number,number>;
 
 export let current = -1;
 
+
+/**
+ * 
+ * @param {Cell[]} pcCellData - holds the cell data {x,y,value,color}
+ * @param {Number} pcIndex - holds the current index to be marked 
+ * @param {Number} counter - holds the current number from (1 to 25 ) to mark. 
+ */
 export const randomPcGridFill = (
   pcCellData: Cell[],
   pcIndex: number[],

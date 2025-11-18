@@ -1,23 +1,36 @@
-import { Link } from 'expo-router';
-import { Dimensions, Image, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Link } from "expo-router";
+import {
+  Dimensions,
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+
+
+// export const WINDOW_WIDTH = windowWidht;
+// export const WINDOW_HEIGHT = windowHeight;
 
 const index = () => {
   return (
     // <View style={styles.mainContainer}>
-      <ImageBackground style={styles.mainContainer} resizeMode="stretch" source={require('../assets/images/BingoBackground.png')}>
-
+    <ImageBackground
+      style={styles.mainContainer}
+      resizeMode="stretch"
+      source={require("../assets/images/BingoBackground.png")}
+    >
       <View style={styles.titleTextContainer}>
         <Text style={styles.titleText}>Welcome to</Text>
       </View>
-      {/* <View style={styles.imageContainer}>
-        <Image style={styles.image} source={require('../assets/images/BingoLogo.png')}>
-        </Image>
-      </View> */}
+
       <View style={styles.btnContainer}>
-        <Link href='/game' asChild>
-        <Pressable style={styles.playButton}>
-          <Text style={styles.btnText}>Join a Game</Text>
-        </Pressable>
+        <Link href="/join-game-screen" asChild>
+          <Pressable style={styles.playButton}>
+            <Text style={styles.btnText}>Join a Game</Text>
+          </Pressable>
         </Link>
         <Pressable style={[styles.playButton, { backgroundColor: "#F5853F" }]}>
           <Text style={[styles.btnText, { color: "black" }]}>
@@ -25,13 +38,7 @@ const index = () => {
           </Text>
         </Pressable>
       </View>
-      {/* <Link href="/game" asChild>
-        <Pressable style={styles.playButton}>
-        <Text style={styles.btnText}>Play!</Text>
-        </Pressable>
-        </Link> */}
-        </ImageBackground>
-    // </View>
+    </ImageBackground>
   );
 };
 
@@ -40,31 +47,18 @@ export default index;
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#F0FFF0",
-    paddingVertical:80,
+    paddingVertical: 80,
   },
-  titleTextContainer:{
-    
-  },
+  titleTextContainer: {},
   titleText: {
     fontSize: 34,
     color: "#130303",
     // fontWeight: '100',
-    fontFamily:'PixelifySans'
+    fontFamily: "PixelifySans",
   },
-  // imageContainer:{
-  //   display:'flex',
-  //   alignItems:'center',
-  //   justifyContent:'center',
-  //   height:100,
-  //   width:100,
-  // },
-
-  // image:{
-
-  // },
   btnContainer: {},
   playButton: {
     display: "flex",
@@ -83,6 +77,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     fontSize: 18,
-    fontFamily:'PixelifySans'
+    fontFamily: "PixelifySans",
   },
 });
