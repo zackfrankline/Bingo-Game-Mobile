@@ -1,3 +1,4 @@
+import { Styles } from "@/Constants/ContentStyles";
 import { useState } from "react";
 import {
   ImageBackground,
@@ -22,13 +23,13 @@ export default function JoinGameScreen() {
   return (
     <ImageBackground
       resizeMode="stretch"
-      src={require('../assets/images/BingoBackground.png')}
       style={styles.mainContainer}
+      source={require("../assets/images/BingoBackground.png")}
     >
       {/* <View className="main-container" style={styles.mainContainer}> */}
         <View className="join-game-container" style={styles.joinGameContainer}>
           <View className="text-container">
-            <Text style={styles.title}>Enter Code to Join the Game</Text>
+            <Text style={[Styles.titleText,{fontSize:28}]}>Enter Code to Join the Game</Text>
           </View>
           <View className="input-container" style={styles.inputContainer}>
             <TextInput
@@ -40,8 +41,8 @@ export default function JoinGameScreen() {
             ></TextInput>
           </View>
           <View className="button-container">
-            <Pressable>
-              <Text>Join Game</Text>
+            <Pressable style={[Styles.playButton,{backgroundColor:'#F5853F'}]}>
+              <Text style = {[Styles.btnText,{color:'#fff'}]}>Join Game</Text>
             </Pressable>
           </View>
         </View>
@@ -52,17 +53,14 @@ export default function JoinGameScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // flex: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
+    
     flex: 1,
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F0FFF0",
-    paddingVertical: 80,
+    
   },
   joinGameContainer: {
-    width: windowWidth * 0.8,
+    width: windowWidth * 0.9,
     // height:windowHeight * 0.8,
     borderBlockColor: "black",
     borderRadius: windowWidth * 0.04,
@@ -70,6 +68,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     alignItems: "center",
     justifyContent: "space-evenly",
+    // opacity:0.8
   },
   title: {
     fontSize: 28,
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
     fontFamily: "PixelifySans",
   },
   inputContainer: {
-    width: "80%",
+    width: "90%",
     height: "20%",
     borderRadius: windowWidth * 0.04,
     // borderBlockColor:'white',
@@ -97,4 +96,5 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#ffff",
   },
+  
 });
